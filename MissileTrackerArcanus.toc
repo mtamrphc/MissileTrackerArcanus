@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: Missile Tracker Arcanus
+## Notes: Tracks damage from Arcane Missiles casts
+## Author: YourName
+## Version: 1.0
+## SavedVariables: MissileTrackerArcanusDB
+
+MissileTrackerArcanus.lua
