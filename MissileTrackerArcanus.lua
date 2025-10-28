@@ -489,24 +489,24 @@ frame:SetScript("OnEvent", function()
         if isArcaneSpell then
             -- Skip timeout checks in debug mode
             if not debugMode then
-                -- If this is Arcane Instability or Surge, check against last AM hit with grace (procs only)
+                -- If this is Arcane Instability or Surge (pure procs), check against last AM hit with grace
                 if spellSource == "Instability" or spellSource == "Instability Crit" or 
                    spellSource == "Surge" or spellSource == "Surge Crit" then
-                    -- These procs get 0.5s grace after the last Arcane Missiles hit
-                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > PROC_GRACE then
+                    -- These procs get 0.5s grace after the last spell
+                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > (CAST_TIMEOUT + PROC_GRACE) then
                         ResetDamage()
                     end
-                -- If this is Explosion or Rupture, use grace period but also update timer
+                -- If this is Explosion or Rupture, use extended timeout (base + grace)
                 elseif spellSource == "Explosion" or spellSource == "Explosion Crit" or
                        spellSource == "Rupture" or spellSource == "Rupture Crit" then
-                    -- Check with grace period
-                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > PROC_GRACE then
+                    -- Check with base timeout + grace period (1.05 + 0.5 = 1.55s)
+                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > (CAST_TIMEOUT + PROC_GRACE) then
                         ResetDamage()
                     end
                     -- Update timer so these can chain
                     lastArcaneMissilesHit = currentTime
                 else
-                    -- Regular Arcane Missiles - check against last AM hit
+                    -- Regular Arcane Missiles - check against last hit with base timeout
                     if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > CAST_TIMEOUT then
                         ResetDamage()
                     end
