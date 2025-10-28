@@ -1,20 +1,23 @@
--- Missile Tracker Arcanus for WoW 1.12
+-- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
 
 local frame = CreateFrame("Frame", "MissileTrackerArcanusFrame", UIParent)
 local damageTotal = 0
 local lastHitTime = 0
 local lastArcaneMissilesHit = 0  -- Track last AM hit separately
 local CAST_TIMEOUT = 2.05  -- Reset if no arcane spell hits for 2.05 seconds
+local TEMPORAL_GRACE = 1.0  -- Extra grace when Temporal Convergence is active
 local damageLog = {}  -- Store individual hits
 local showBreakdown = false
 local detailFrames = {}  -- Store icon/text frames for reuse
 local MAX_DETAIL_ROWS = 15  -- Limit displayed rows
 local topRecord = 0  -- Will be loaded from saved vars
 local debugMode = false  -- Debug mode flag
+local hasTemporalConvergence = false  -- Track Temporal Convergence buff
 
 -- Event handler for loading saved variables
 frame:RegisterEvent("ADDON_LOADED")
 frame:RegisterEvent("CHAT_MSG_SPELL_SELF_DAMAGE")
+frame:RegisterEvent("PLAYER_AURAS_CHANGED")  -- Track buffs
 
 -- Create the display window
 local displayFrame = CreateFrame("Frame", "MTADisplay", UIParent)
@@ -174,7 +177,21 @@ lockButton:SetScript("OnClick", function()
     end
 end)
 
--- Function to trigger shake effect
+-- Function to check if player has Temporal Convergence buff
+local function CheckTemporalConvergence()
+    local i = 1
+    while UnitBuff("player", i) do
+        local buffTexture = UnitBuff("player", i)
+        -- Check if any buff matches Temporal Convergence
+        -- You may need to adjust this texture path based on the actual buff icon
+        if string.find(buffTexture or "", "Spell_Nature_TimeStop") or 
+           string.find(buffTexture or "", "Temporal") then
+            return true
+        end
+        i = i + 1
+    end
+    return false
+end
 local function ShakeText()
     shakeTime = 0.15  -- Shake for 0.15 seconds
 end
@@ -435,6 +452,10 @@ frame:SetScript("OnEvent", function()
         UpdateDisplay()
         DEFAULT_CHAT_FRAME:AddMessage("Missile Tracker Arcanus loaded! Record: " .. topRecord)
         
+    elseif event == "PLAYER_AURAS_CHANGED" then
+        -- Check for Temporal Convergence buff
+        hasTemporalConvergence = CheckTemporalConvergence()
+        
     elseif event == "CHAT_MSG_SPELL_SELF_DAMAGE" then
         local currentTime = GetTime()
         local isArcaneSpell = false
@@ -488,8 +509,14 @@ frame:SetScript("OnEvent", function()
         if isArcaneSpell then
             -- Skip timeout checks in debug mode
             if not debugMode then
-                -- All arcane spells use the same timeout
-                if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > CAST_TIMEOUT then
+                -- Determine timeout (add extra grace for Rupture with Temporal Convergence)
+                local timeout = CAST_TIMEOUT
+                if (spellSource == "Rupture" or spellSource == "Rupture Crit") and hasTemporalConvergence then
+                    timeout = CAST_TIMEOUT + TEMPORAL_GRACE
+                end
+                
+                -- Check timeout
+                if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > timeout then
                     ResetDamage()
                 end
                 
