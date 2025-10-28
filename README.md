@@ -1,5 +1,6 @@
-<img src="images/mta.png" alt="Alt text" width="200">
-# MissileTrackerArcanus
+# MissileTrackerArcanus 
+<img src="images/mta.png"  width="200">
+
 A wow addon for tracking arcane things.
 
 This addon is for fun. 
