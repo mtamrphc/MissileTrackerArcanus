@@ -4,8 +4,7 @@ local frame = CreateFrame("Frame", "MissileTrackerArcanusFrame", UIParent)
 local damageTotal = 0
 local lastHitTime = 0
 local lastArcaneMissilesHit = 0  -- Track last AM hit separately
-local CAST_TIMEOUT = 1.05  -- Reset if no Arcane Missiles hits for 1.05 seconds
-local PROC_GRACE = 1  -- Additional grace for procs after last AM (total 0.5s for Instability/Surge)
+local CAST_TIMEOUT = 1.55  -- Reset if no arcane spell hits for 1.55 seconds
 local damageLog = {}  -- Store individual hits
 local showBreakdown = false
 local detailFrames = {}  -- Store icon/text frames for reuse
@@ -489,28 +488,14 @@ frame:SetScript("OnEvent", function()
         if isArcaneSpell then
             -- Skip timeout checks in debug mode
             if not debugMode then
-                -- If this is Arcane Instability or Surge (pure procs), check against last AM hit with grace
-                if spellSource == "Instability" or spellSource == "Instability Crit" or 
-                   spellSource == "Surge" or spellSource == "Surge Crit" then
-                    -- These procs get 0.5s grace after the last spell
-                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > (CAST_TIMEOUT + PROC_GRACE) then
-                        ResetDamage()
-                    end
-                -- If this is Explosion or Rupture, use extended timeout (base + grace)
-                elseif spellSource == "Explosion" or spellSource == "Explosion Crit" or
-                       spellSource == "Rupture" or spellSource == "Rupture Crit" then
-                    -- Check with base timeout + grace period (1.05 + 0.5 = 1.55s)
-                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > (CAST_TIMEOUT + PROC_GRACE) then
-                        ResetDamage()
-                    end
-                    -- Update timer so these can chain
-                    lastArcaneMissilesHit = currentTime
-                else
-                    -- Regular Arcane Missiles - check against last hit with base timeout
-                    if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > CAST_TIMEOUT then
-                        ResetDamage()
-                    end
-                    -- Update AM hit time
+                -- All arcane spells use the same timeout
+                if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > CAST_TIMEOUT then
+                    ResetDamage()
+                end
+                
+                -- All spells except pure procs (Instability/Surge) update the timer
+                if spellSource ~= "Instability" and spellSource ~= "Instability Crit" and
+                   spellSource ~= "Surge" and spellSource ~= "Surge Crit" then
                     lastArcaneMissilesHit = currentTime
                 end
             end
