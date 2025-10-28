@@ -489,19 +489,21 @@ frame:SetScript("OnEvent", function()
         if isArcaneSpell then
             -- Skip timeout checks in debug mode
             if not debugMode then
-                -- If this is Arcane Instability or Surge, check against last AM hit with grace
+                -- If this is Arcane Instability, Surge, Explosion, or Rupture, check against last AM hit with grace
                 if spellSource == "Instability" or spellSource == "Instability Crit" or 
-                   spellSource == "Surge" or spellSource == "Surge Crit" then
-                    -- These procs get 0.5s grace after the last Arcane Missiles hit
+                   spellSource == "Surge" or spellSource == "Surge Crit" or
+                   spellSource == "Explosion" or spellSource == "Explosion Crit" or
+                   spellSource == "Rupture" or spellSource == "Rupture Crit" then
+                    -- These procs/abilities get 0.5s grace after the last Arcane Missiles hit
                     if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > PROC_GRACE then
                         ResetDamage()
                     end
                 else
-                    -- Regular Arcane Missiles and Arcane Explosion - check against last AM hit
+                    -- Regular Arcane Missiles - check against last AM hit
                     if lastArcaneMissilesHit and lastArcaneMissilesHit > 0 and currentTime - lastArcaneMissilesHit > CAST_TIMEOUT then
                         ResetDamage()
                     end
-                    -- Update AM hit time (both AM and Explosion update this)
+                    -- Update AM hit time
                     lastArcaneMissilesHit = currentTime
                 end
             end
