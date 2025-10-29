@@ -54,6 +54,7 @@ titleText:SetText("Arcane Missiles")
 -- Damage text
 local damageText = displayFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 damageText:SetPoint("TOP", 0, -30)
+damageText:SetFont(FALLBACK_FONT, 14)
 damageText:SetText("0 damage")
 
 -- Glow effect for new records (3 white layers increasing in size)
@@ -458,13 +459,19 @@ frame:SetScript("OnEvent", function()
         UpdateDisplay()
         DEFAULT_CHAT_FRAME:AddMessage("Missile Tracker Arcanus loaded! Record: " .. topRecord)
         
-        -- Update all fonts after everything is loaded
-        damageText:SetFont(ACTIVE_FONT, 14)
-        for i, spark in ipairs(sparkTexts) do
-            spark:SetFont(ACTIVE_FONT, 16)
-        end
-        for i, glowData in ipairs(glowLayers) do
-            glowData.layer:SetFont(ACTIVE_FONT, 14)
+        -- Update all fonts after everything is loaded and test if it works
+        local fontWorked = damageText:SetFont(ACTIVE_FONT, 14)
+        if fontWorked then
+            DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font applied successfully!")
+            for i, spark in ipairs(sparkTexts) do
+                spark:SetFont(ACTIVE_FONT, 16)
+            end
+            for i, glowData in ipairs(glowLayers) do
+                glowData.layer:SetFont(ACTIVE_FONT, 14)
+            end
+        else
+            DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font failed - check file path and format")
+            ACTIVE_FONT = FALLBACK_FONT
         end
         
     elseif event == "PLAYER_AURAS_CHANGED" then
