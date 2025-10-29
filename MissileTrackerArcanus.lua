@@ -1,7 +1,7 @@
 -- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
 
 -- Custom font path - try to load, fallback to default if it fails
-local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf"
+local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\font.ttf"
 local FALLBACK_FONT = "Fonts\\FRIZQT__.TTF"
 local USE_CUSTOM_FONT = false
 
