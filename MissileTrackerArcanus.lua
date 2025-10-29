@@ -1,9 +1,7 @@
 -- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
 
 -- Custom font path
-local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf"
-local FALLBACK_FONT = "Fonts\\FRIZQT__.TTF"
-local ACTIVE_FONT = CUSTOM_FONT
+local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\fonts\\Dwarfrunes-Mr2P.ttf"
 
 local frame = CreateFrame("Frame", "MissileTrackerArcanusFrame", UIParent)
 local damageTotal = 0
@@ -54,7 +52,7 @@ titleText:SetText("Arcane Missiles")
 -- Damage text
 local damageText = displayFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 damageText:SetPoint("TOP", 0, -30)
-damageText:SetFont(FALLBACK_FONT, 14)
+damageText:SetFont(CUSTOM_FONT, 14)
 damageText:SetText("0 damage")
 
 -- Glow effect for new records (3 white layers increasing in size)
@@ -63,7 +61,7 @@ for layer = 1, 3 do
     -- Create 8 directional glows for each layer (4 cardinal + 4 diagonal)
     for i = 1, 8 do
         local glow = displayFrame:CreateFontString(nil, "BACKGROUND")
-        glow:SetFont(FALLBACK_FONT, 14)  -- Start with fallback
+        glow:SetFont(CUSTOM_FONT, 14)
         glow:SetPoint("TOP", 0, -30)
         glow:SetText("")
         table.insert(glowLayers, {layer = glow, size = layer})
@@ -85,7 +83,7 @@ local MAX_SPARKS = 5
 -- Create spark text pool
 for i = 1, MAX_SPARKS do
     local spark = displayFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    spark:SetFont(FALLBACK_FONT, 16)  -- Start with fallback
+    spark:SetFont(CUSTOM_FONT, 16)
     spark:SetPoint("TOP", 0, -30)
     spark:Hide()
     table.insert(sparkTexts, spark)
@@ -242,7 +240,7 @@ local function CreateSpark(damage, color)
         }
         
         spark:SetText("+" .. damage)
-        spark:SetFont(ACTIVE_FONT, 16)
+        spark:SetFont(CUSTOM_FONT, 16)
         spark:SetTextColor(color[1], color[2], color[3], 1)
         spark:Show()
         
@@ -315,7 +313,7 @@ function UpdateDisplay()
     displayFrame.currentColor = textColor
     
     -- Apply font size and color
-    damageText:SetFont(ACTIVE_FONT, fontSize)
+    damageText:SetFont(CUSTOM_FONT, fontSize)
     damageText:SetTextColor(textColor[1], textColor[2], textColor[3])
     damageText:SetText(damageTotal .. " damage")
     damageText:SetPoint("TOP", shakeOffsetX, -30 + shakeOffsetY)
@@ -344,7 +342,7 @@ function UpdateDisplay()
                 local offset = layerSize
                 local fontIncrease = layerSize
                 
-                glow:SetFont(ACTIVE_FONT, fontSize + fontIncrease)
+                glow:SetFont(CUSTOM_FONT, fontSize + fontIncrease)
                 glow:SetText(damageTotal .. " damage")
                 glow:SetPoint("TOP", shakeOffsetX + (dir.x * offset), -30 + shakeOffsetY + (dir.y * offset))
                 
@@ -458,36 +456,6 @@ frame:SetScript("OnEvent", function()
         
         UpdateDisplay()
         DEFAULT_CHAT_FRAME:AddMessage("Missile Tracker Arcanus loaded! Record: " .. topRecord)
-        
-        -- Try multiple path formats to find the working one
-        local paths = {
-            "Interface\\AddOns\\MissileTrackerArcanus\\fonts\\Dwarfrunes-Mr2P.ttf",  -- lowercase 'fonts'
-            "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf",
-            "Interface/AddOns/MissileTrackerArcanus/fonts/Dwarfrunes-Mr2P.ttf",
-            "Interface/AddOns/MissileTrackerArcanus/font/Dwarfrunes-Mr2P.ttf",
-        }
-        
-        local fontWorked = false
-        for i, path in ipairs(paths) do
-            if damageText:SetFont(path, 14) then
-                ACTIVE_FONT = path
-                fontWorked = true
-                DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font loaded with path: " .. path)
-                break
-            end
-        end
-        
-        if fontWorked then
-            for i, spark in ipairs(sparkTexts) do
-                spark:SetFont(ACTIVE_FONT, 16)
-            end
-            for i, glowData in ipairs(glowLayers) do
-                glowData.layer:SetFont(ACTIVE_FONT, 14)
-            end
-        else
-            DEFAULT_CHAT_FRAME:AddMessage("MTA: All font paths failed - using default font")
-            ACTIVE_FONT = FALLBACK_FONT
-        end
         
     elseif event == "PLAYER_AURAS_CHANGED" then
         -- Check for Temporal Convergence buff
@@ -731,7 +699,7 @@ animFrame:SetScript("OnUpdate", function()
             
             -- Grow from size 16 to 22 as it fades
             local size = 16 + (progress * 6)
-            sparkData.spark:SetFont(ACTIVE_FONT, size)
+            sparkData.spark:SetFont(CUSTOM_FONT, size)
             
             -- Fade color to white and reduce alpha
             local fadeToWhite = progress * 0.7
