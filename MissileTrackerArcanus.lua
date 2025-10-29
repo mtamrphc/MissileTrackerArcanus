@@ -459,10 +459,25 @@ frame:SetScript("OnEvent", function()
         UpdateDisplay()
         DEFAULT_CHAT_FRAME:AddMessage("Missile Tracker Arcanus loaded! Record: " .. topRecord)
         
-        -- Update all fonts after everything is loaded and test if it works
-        local fontWorked = damageText:SetFont(ACTIVE_FONT, 14)
+        -- Try multiple path formats to find the working one
+        local paths = {
+            "Interface\\AddOns\\MissileTrackerArcanus\\fonts\\Dwarfrunes-Mr2P.ttf",  -- lowercase 'fonts'
+            "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf",
+            "Interface/AddOns/MissileTrackerArcanus/fonts/Dwarfrunes-Mr2P.ttf",
+            "Interface/AddOns/MissileTrackerArcanus/font/Dwarfrunes-Mr2P.ttf",
+        }
+        
+        local fontWorked = false
+        for i, path in ipairs(paths) do
+            if damageText:SetFont(path, 14) then
+                ACTIVE_FONT = path
+                fontWorked = true
+                DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font loaded with path: " .. path)
+                break
+            end
+        end
+        
         if fontWorked then
-            DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font applied successfully!")
             for i, spark in ipairs(sparkTexts) do
                 spark:SetFont(ACTIVE_FONT, 16)
             end
@@ -470,7 +485,7 @@ frame:SetScript("OnEvent", function()
                 glowData.layer:SetFont(ACTIVE_FONT, 14)
             end
         else
-            DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font failed - check file path and format")
+            DEFAULT_CHAT_FRAME:AddMessage("MTA: All font paths failed - using default font")
             ACTIVE_FONT = FALLBACK_FONT
         end
         
