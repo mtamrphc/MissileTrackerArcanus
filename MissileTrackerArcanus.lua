@@ -1,21 +1,9 @@
 -- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
 
--- Custom font path - try to load, fallback to default if it fails
-local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\font.ttf"
+-- Custom font path
+local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf"
 local FALLBACK_FONT = "Fonts\\FRIZQT__.TTF"
-local USE_CUSTOM_FONT = false
-
--- Test if custom font loads
-local testFrame = CreateFrame("Frame")
-local testText = testFrame:CreateFontString()
-if testText:SetFont(CUSTOM_FONT, 12) then
-    USE_CUSTOM_FONT = true
-    DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font loaded successfully!")
-else
-    DEFAULT_CHAT_FRAME:AddMessage("MTA: Custom font failed to load, using default font")
-end
-
-local ACTIVE_FONT = USE_CUSTOM_FONT and CUSTOM_FONT or FALLBACK_FONT
+local ACTIVE_FONT = FALLBACK_FONT  -- Start with fallback, will try custom after load
 
 local frame = CreateFrame("Frame", "MissileTrackerArcanusFrame", UIParent)
 local damageTotal = 0
