@@ -1,5 +1,8 @@
 -- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
 
+-- Custom font path
+local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\font\\Dwarfrunes-Mr2P.ttf"
+
 local frame = CreateFrame("Frame", "MissileTrackerArcanusFrame", UIParent)
 local damageTotal = 0
 local lastHitTime = 0
@@ -57,7 +60,7 @@ for layer = 1, 3 do
     -- Create 8 directional glows for each layer (4 cardinal + 4 diagonal)
     for i = 1, 8 do
         local glow = displayFrame:CreateFontString(nil, "BACKGROUND")
-        glow:SetFont("Fonts\\FRIZQT__.TTF", 14)
+        glow:SetFont(CUSTOM_FONT, 14)
         glow:SetPoint("TOP", 0, -30)
         glow:SetText("")
         table.insert(glowLayers, {layer = glow, size = layer})
@@ -235,7 +238,7 @@ local function CreateSpark(damage, color)
         }
         
         spark:SetText("+" .. damage)
-        spark:SetFont("Fonts\\FRIZQT__.TTF", 16)
+        spark:SetFont(CUSTOM_FONT, 16)
         spark:SetTextColor(color[1], color[2], color[3], 1)
         spark:Show()
         
@@ -308,7 +311,7 @@ function UpdateDisplay()
     displayFrame.currentColor = textColor
     
     -- Apply font size and color
-    damageText:SetFont("Fonts\\FRIZQT__.TTF", fontSize)
+    damageText:SetFont(CUSTOM_FONT, fontSize)
     damageText:SetTextColor(textColor[1], textColor[2], textColor[3])
     damageText:SetText(damageTotal .. " damage")
     damageText:SetPoint("TOP", shakeOffsetX, -30 + shakeOffsetY)
@@ -337,7 +340,7 @@ function UpdateDisplay()
                 local offset = layerSize
                 local fontIncrease = layerSize
                 
-                glow:SetFont("Fonts\\FRIZQT__.TTF", fontSize + fontIncrease)
+                glow:SetFont(CUSTOM_FONT, fontSize + fontIncrease)
                 glow:SetText(damageTotal .. " damage")
                 glow:SetPoint("TOP", shakeOffsetX + (dir.x * offset), -30 + shakeOffsetY + (dir.y * offset))
                 
@@ -694,7 +697,7 @@ animFrame:SetScript("OnUpdate", function()
             
             -- Grow from size 16 to 22 as it fades
             local size = 16 + (progress * 6)
-            sparkData.spark:SetFont("Fonts\\FRIZQT__.TTF", size)
+            sparkData.spark:SetFont(CUSTOM_FONT, size)
             
             -- Fade color to white and reduce alpha
             local fadeToWhite = progress * 0.7
