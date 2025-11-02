@@ -1,4 +1,4 @@
--- Function to trigger shake effect-- Missile Tracker Arcanus for WoW 1.12
+-- Missile Tracker Arcanus for WoW 1.12
 
 -- Custom font path
 local CUSTOM_FONT = "Interface\\AddOns\\MissileTrackerArcanus\\fonts\\Dwarfrunes-Mr2P.ttf"
@@ -52,8 +52,8 @@ titleText:SetText("Arcane Missiles")
 -- Damage text
 local damageText = displayFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
 damageText:SetPoint("TOP", 0, -30)
-damageText:SetFont(CUSTOM_FONT, 14)
-damageText:SetText("0 damage")
+damageText:SetFont(CUSTOM_FONT, 56)
+damageText:SetText("0")
 
 -- Glow effect for new records (3 white layers increasing in size)
 local glowLayers = {}
@@ -61,7 +61,7 @@ for layer = 1, 3 do
     -- Create 8 directional glows for each layer (4 cardinal + 4 diagonal)
     for i = 1, 8 do
         local glow = displayFrame:CreateFontString(nil, "BACKGROUND")
-        glow:SetFont(CUSTOM_FONT, 14)
+        glow:SetFont(CUSTOM_FONT, 56)
         glow:SetPoint("TOP", 0, -30)
         glow:SetText("")
         table.insert(glowLayers, {layer = glow, size = layer})
@@ -83,7 +83,7 @@ local MAX_SPARKS = 5
 -- Create spark text pool
 for i = 1, MAX_SPARKS do
     local spark = displayFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-    spark:SetFont(CUSTOM_FONT, 16)
+    spark:SetFont(CUSTOM_FONT, 64)
     spark:SetPoint("TOP", 0, -30)
     spark:Hide()
     table.insert(sparkTexts, spark)
@@ -197,6 +197,8 @@ local function CheckTemporalConvergence()
     end
     return false
 end
+
+-- Function to trigger shake effect
 local function ShakeText()
     shakeTime = 0.15  -- Shake for 0.15 seconds
 end
@@ -205,10 +207,10 @@ end
 local function GetShakeIntensity()
     if topRecord > 0 and damageTotal > 0 then
         local progress = damageTotal / topRecord
-        -- Scale from 4 to 10 as we approach/exceed record
-        return 4 + (progress * 6)
+        -- Scale from 16 to 40 as we approach/exceed record
+        return 16 + (progress * 24)
     end
-    return 4  -- Default shake intensity
+    return 16  -- Default shake intensity
 end
 
 -- Function to create spark effect
@@ -240,7 +242,7 @@ local function CreateSpark(damage, color)
         }
         
         spark:SetText("+" .. damage)
-        spark:SetFont(CUSTOM_FONT, 16)
+        spark:SetFont(CUSTOM_FONT, 64)
         spark:SetTextColor(color[1], color[2], color[3], 1)
         spark:Show()
         
@@ -274,16 +276,16 @@ function UpdateDisplay()
     end
     
     -- Calculate size and color based on progress to record
-    local fontSize = 14
+    local fontSize = 56
     local textColor = {1, 1, 1}  -- White by default
     local isNewRecord = false
     
     if topRecord > 0 and damageTotal > 0 then
         local progress = damageTotal / topRecord
         
-        -- Scale font size from 14 to 24 as we approach record
-        fontSize = 14 + (progress * 10)
-        fontSize = math.min(fontSize, 24)  -- Cap at 24
+        -- Scale font size from 56 to 96 as we approach record
+        fontSize = 56 + (progress * 40)
+        fontSize = math.min(fontSize, 96)  -- Cap at 96
         
         -- Arcane color transition: white -> cyan -> light blue -> purple
         if progress >= 1 then
@@ -315,7 +317,7 @@ function UpdateDisplay()
     -- Apply font size and color
     damageText:SetFont(CUSTOM_FONT, fontSize)
     damageText:SetTextColor(textColor[1], textColor[2], textColor[3])
-    damageText:SetText(damageTotal .. " damage")
+    damageText:SetText(damageTotal)
     damageText:SetPoint("TOP", shakeOffsetX, -30 + shakeOffsetY)
     
     -- Apply glow effect for new records (3 white layers)
@@ -343,7 +345,7 @@ function UpdateDisplay()
                 local fontIncrease = layerSize
                 
                 glow:SetFont(CUSTOM_FONT, fontSize + fontIncrease)
-                glow:SetText(damageTotal .. " damage")
+                glow:SetText(damageTotal)
                 glow:SetPoint("TOP", shakeOffsetX + (dir.x * offset), -30 + shakeOffsetY + (dir.y * offset))
                 
                 -- Outer layers slightly more transparent
@@ -697,8 +699,8 @@ animFrame:SetScript("OnUpdate", function()
             local y = sparkData.startY + (sparkData.endY - sparkData.startY) * progress
             sparkData.spark:SetPoint("TOP", x, y)
             
-            -- Grow from size 16 to 22 as it fades
-            local size = 16 + (progress * 6)
+            -- Grow from size 64 to 88 as it fades
+            local size = 64 + (progress * 24)
             sparkData.spark:SetFont(CUSTOM_FONT, size)
             
             -- Fade color to white and reduce alpha
